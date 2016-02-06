@@ -1,0 +1,3 @@
+*.pyc
+headout/headout/settings.py
+headout/db.sqlite3
