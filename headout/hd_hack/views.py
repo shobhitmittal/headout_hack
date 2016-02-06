@@ -127,6 +127,7 @@ def create_event(request):
 		#print request.body
 		#request_rec=ast.literal_eval(request.body)
 		request_rec=json.loads(request.POST['data'])
+		user_iden=request_rec['auth_token']
 		event_id=request_rec['event_id']
 		event_name=request_rec['event_name']
 		event_desc=request_rec['event_desc']
@@ -144,12 +145,15 @@ def create_event(request):
 		event_created_at=int(time.time())
 		(event_save,event_status)=models.event_table.objects.get_or_create(event_id=event_id,defaults={'event_name':event_name,'event_desc':event_desc,'event_location':event_location,'created_by':created_by,'updated_by':updated_by,'event_start_date':event_start_date,'event_end_date':event_end_date,'event_created_at':event_created_at,'event_updated_at':event_created_at})
 		print (event_save,event_status)
+		user_iden_obj=models.user_table.objects.get(user_iden=user_iden)
+		event_id_obj=models.event_table.objects.get(event_id=event_id)		
+		admin_status=models.event_member.objects.create(event_id=event_id_obj,user_iden=user_iden_obj,admin=True,event_gng=True,event_maybe=False,event_nt_gng=False,event_participated=False)
+		print admin_status
 		if event_status is True:
 			data={'event_id':event_id}
 			response_data=response_handling.send_response(data,iserror=False,error_code=200)
 		else:
 			response_data=response_handling.send_response(iserror=True,error_code=207)
-		return HttpResponse(json.dumps(response_data), content_type="application/json")
 		#event_id= models.CharField(max_length=200,primary_key=True)
 		#event_name=models.CharField(max_length=200)
 		#event_desc=models.TextField()
@@ -167,6 +171,9 @@ def create_event(request):
 		##AUTO
 		#event_created_at=models.CharField(max_length=200)
 		#event_updated_at=models.CharField(max_length=200)
+	else:
+		response_data=response_handling.send_response(not_found=True,error_code=206)
+	return HttpResponse(json.dumps(response_data), content_type="application/json")
 
 @csrf_exempt
 def user_loc_update(request):
@@ -187,4 +194,55 @@ def user_loc_update(request):
 		print user_loc_status
 		data={'data':'Location_save_suceess'}
 		response_data=response_handling.send_response(data,iserror=False,error_code=200)
-		return HttpResponse(json.dumps(response_data), content_type="application/json")
+	else:
+		response_data=response_handling.send_response(not_found=True,error_code=206)
+	return HttpResponse(json.dumps(response_data), content_type="application/json")
+
+
+@csrf_exempt
+def invite_members(request):
+	if request.method=='POST':
+		print request.POST
+		request_rec=json.loads(request.POST['data'])
+		datas=request_rec['data']
+		admin_id=request_rec['admin_id']
+		data_return={}
+		phone_list=[]
+		email_list=[]
+		for data in datas:
+			if data.isdigit() is True:
+				phone_list.append(data)
+				data_email_user_iden=models.user_table.objects.values('user_iden').get(phone=data)
+				if data_email_user_iden[0]['user_iden']:
+					data_return[data]=data_email_user_iden[0]['user_iden']
+			else:
+				email_list.append(data)
+				models.user_table.objects.values('user_iden').get(email=data)
+				data_phone_user_iden=models.user_table.objects.values('user_iden').get(email=data)
+				if data_phone_user_iden[0]['user_iden']:
+					data_return[data]=data_phone_user_iden[0]['user_iden']
+		data={'email_phone_user_id':data_return}
+		response_data=response_handling.send_response(data,iserror=False,error_code=200)
+	else:
+		response_data=response_handling.send_response(not_found=True,error_code=206)
+	return HttpResponse(json.dumps(response_data), content_type="application/json")
+
+@csrf_exempt
+def gcm_inbound(request):
+	if request.method=='POST':
+		print request.POST
+		request_rec=json.loads(request.POST['data'])
+		gcm_id=request_rec['gcm_id']
+		user_iden=request_rec['user_id']
+		created_at=int(time.time())
+		user_iden_obj=models.user_table.objects.get(user_iden=user_iden)
+		(gcm_save,gcm_status)=models.gcm_table.objects.get_or_create(gcm_id=gcm_id,defaults={'user_iden':user,'created_at':created_at})
+		print (gcm_save,gcm_status)
+		if gcm_status is True:
+			data={'gcm_id':gcm_id}
+			response_data=response_handling.send_response(data,iserror=False,error_code=200)
+		else:
+			response_data=response_handling.send_response(iserror=True,error_code=207)
+	else:
+		response_data=response_handling.send_response(not_found=True,error_code=206)
+	return HttpResponse(json.dumps(response_data), content_type="application/json")
