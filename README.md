@@ -6,3 +6,4 @@
 205: Non-Existing username
 204: Existing
 206: NO post req rec.
+207: Failure to save

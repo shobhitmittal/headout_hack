@@ -21,4 +21,8 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^user_reg/', hd_views.first_page),
     url(r'^user_login/', hd_views.login),
+    url(r'^create_event/', hd_views.create_event),
+    url(r'^user_loc_update/', hd_views.user_loc_update),
+
+
 ]
