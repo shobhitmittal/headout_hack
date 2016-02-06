@@ -7,3 +7,4 @@
 204: Existing
 206: NO post req rec.
 207: Failure to save
+208: Failure to retrive

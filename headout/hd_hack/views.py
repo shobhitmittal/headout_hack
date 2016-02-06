@@ -246,3 +246,26 @@ def gcm_inbound(request):
 	else:
 		response_data=response_handling.send_response(not_found=True,error_code=206)
 	return HttpResponse(json.dumps(response_data), content_type="application/json")
+
+@csrf_exempt
+def send_location(request):
+	if request.method=='POST':
+		print request.POST
+		request_rec=json.loads(request.POST['data'])
+		event_id=request_rec['event_id']
+		user_iden_req=request_rec['user_id']
+		user_iden_list=request_rec['user_id_share']
+		data_return={}
+		for user_iden_iter in user_iden_list:
+			loc_data= models.user_location.objects.filter(user_iden=user_iden_iter).values('current_location')
+			data_return[user_iden_iter]=loc_data[0]['current_location']
+			location_sharing_obj=models.location_sharing.objects.create(event_id=event_id,user_iden=user_iden_req,user_loc_recv=user_iden_iter)
+			print location_sharing_obj
+		if data_return:
+			data={'loc_data':data_return}
+			response_data=response_handling.send_response(data,iserror=False,error_code=200)
+		else:
+			response_data=response_handling.send_response(iserror=True,error_code=208)
+	else:
+		response_data=response_handling.send_response(not_found=True,error_code=206)
+	return HttpResponse(json.dumps(response_data), content_type="application/json")		
