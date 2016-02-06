@@ -15,7 +15,10 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.contrib import admin
+from hd_hack import views as hd_views
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
+    url(r'^user_reg/', hd_views.first_page),
+    url(r'^user_login/', hd_views.login),
 ]
