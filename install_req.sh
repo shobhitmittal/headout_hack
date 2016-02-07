@@ -1,3 +1,3 @@
 #!/bin/bash
-apt-get install python-pip git
-pip install Django requests
+apt-get install python-pip git python-dev
+pip install Django requests pycrypto

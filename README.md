@@ -1,5 +1,6 @@
 # headout_hack
 <p>
+<b>STATUS_CODES USED</b><br>
 200: Success<br>
 202: Base ERROR<br>
 203: Authentication<br>
