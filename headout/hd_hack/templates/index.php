@@ -23,7 +23,86 @@
     <![endif]-->
 	
          <?php include 'jsFiles.php'?>
-       
+       <script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyBGyuOkViyHhof5u1rfmROkFWE1256E8DQ"></script>
+<script>
+/*function initialize() {
+  var mapProp = {
+    center:new google.maps.LatLng(12.9335422,77.62134929999999),
+    zoom:5,
+    mapTypeId:google.maps.MapTypeId.ROADMAP
+  };
+  var map=new google.maps.Map(document.getElementById("googleMap"),mapProp);
+}
+google.maps.event.addDomListener(window, 'load', initialize);*/
+
+window.onload = function() {
+  if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(showPosition);
+    } else { 
+        x.innerHTML = "Geolocation is not supported by this browser.";
+    }
+};
+
+function showPosition(position) {
+    /*var latlon = position.coords.latitude + "," + position.coords.longitude;
+
+    var img_url = "http://maps.googleapis.com/maps/api/staticmap?sensor=false";
+	
+    document.getElementById("googleMap").innerHTML = "<img src='"+img_url+"'>";*/
+	
+	lat = position.coords.latitude;
+    lon = position.coords.longitude;
+    latlon = new google.maps.LatLng(lat, lon)
+	
+	lat1 = 12.9429927;
+    lon1 = 77.6959311;
+    latlon1 = new google.maps.LatLng(lat1, lon1)
+	
+	
+    mapholder = document.getElementById('googleMap')
+    mapholder.style.height = '380px';
+    mapholder.style.width = '900px';
+
+    var myOptions = {
+    center:latlon,latlon1,zoom:14,
+    mapTypeId:google.maps.MapTypeId.ROADMAP,
+    mapTypeControl:false,
+    navigationControlOptions:{style:google.maps.NavigationControlStyle.SMALL}
+    }
+	
+      var directionsService = new google.maps.DirectionsService;
+  var directionsDisplay = new google.maps.DirectionsRenderer;
+    var map = new google.maps.Map(document.getElementById("googleMap"), myOptions);
+    var marker = new google.maps.Marker({position:latlon,map:map,title:"You are here!"});
+	
+	 var marker1 = new google.maps.Marker({position:latlon1,map:map,title:"You are here!"});
+	var flightPlanCoordinates = [
+    {lat: 12.9200, lng: 77.6200},
+		{lat:lat,lng:lon}
+  ];
+  var flightPlanCoordinates1 = [
+    {lat: 12.9429927 , lng: 77.6959311},
+		{lat:12.9562,lng:77.7019}
+  ];
+  var flightPath = new google.maps.Polyline({
+    path: flightPlanCoordinates,
+    geodesic: true,
+    strokeColor: '#FF0000',
+    strokeOpacity: 1.0,
+    strokeWeight: 2
+  });
+  var flightPath1 = new google.maps.Polyline({
+    path: flightPlanCoordinates1,
+    geodesic: true,
+    strokeColor: '#FF0000',
+    strokeOpacity: 1.0,
+    strokeWeight: 2
+  });
+  flightPath.setMap(map);
+ flightPath1.setMap(map);
+}
+
+</script>
          </head>
     <body id="page-top" ng-app="SanjayApp" data-spy="scroll" data-target=".navbar-fixed-top">
         <div class="sarathy"></div>
@@ -103,6 +182,9 @@
             <li><a href="logout-script.php" class="logoutHover"><i class="fa fa-power-off fa-lg"></i>&nbsp; Logout</a></li>
           </ul>
         </li>';
+		echo '<li>
+                        <a class="page-scroll" href="#delivery"><i class="fa fa-bell-o fa-lg"></i>&nbsp; Delivery Boys</a>
+                    </li>';
 					
 			}
 			else{
@@ -306,15 +388,32 @@
   <label for="event_location" class="col-sm-2 control-label">Event location </label>      
   <div class="col-sm-10">          
   <input type="text" class="form-control" id="event_location" name="event_location"  placeholder="Event location" required> </div>    </div>   
-    <div class="form-group">    
-  <label for="event_start_date" class="col-sm-2 control-label">Event start date</label>      
-  <div class="col-sm-10">          
-  <input type="text" class="form-control" id="event_start_date"  name="event_start_date"     placeholder="Event start date" required>       </div>    </div> 
+    <div class="form-group">  
+	 <label for="event_start_date" class="col-sm-2 control-label">Event start date</label>   
+<div class="input-group date col-sm-10" id="datetimepicker2">
+                    <input type="text" class="form-control" id="event_start_date"  name="event_start_date" placeholder="Event start date" required/>
+                    <span class="input-group-addon">
+                        <span class="glyphicon glyphicon-calendar"></span>
+                    </span>
+                </div>	
+       </div> 
     <div class="form-group">    
   <label for="event_end_date" class="col-sm-2 control-label">Event End Date</label>      
   <div class="col-sm-10">          
   <input type="text" class="form-control" id="event_end_date"  name="event_end_date"     placeholder="Event end date" required>       </div>    </div> 
   
+  <div class="form-group">   
+  									 <label for="from" class="col-sm-2 control-label">Delivery boys responsible :</label>
+									  <div class="col-sm-10">
+											  <select class="form-control" id="delivery_boys" required="required" name="delivery_boys">
+												<option>Sanjay</option>
+												<option>Shobi</option>
+												<option selected>Shridhar</option>
+												<option>Ram</option>
+												<option>Kailash</option>
+												<option>Gouri</option>
+											  </select>
+						</div>    </div> 
 
 					 <div class="col-sm-12 controls">
             <!--input type="submit" id="btn-login" -->
@@ -325,10 +424,22 @@
   
 	</section>
 			';
+			
+			
 			}?>
+				<section id="delivery">
+
+<div class="container">    
+        <div style="margin-top:30px;" >       
+		<div id="googleMap" style="width:900px;height:380px; margin-left:100px;display:center;" ></div>           
+           </div>
+		   </div>
+                   
+  
+  
+	</section>
 
    <!--script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.min.js"></script-->
-
 <script>
 $("#simplepost").click(function(e)
 {
@@ -372,7 +483,14 @@ $.ajax({
 });
   }*/
   
-  
+  $(function () {
+                $('#datetimepicker1').datetimepicker();
+            });
+			   $(function () {
+                $('#datetimepicker2').datetimepicker({
+                    locale: 'ru'
+                });
+            });
 </script>
  <?php
 if (!empty($_POST)) {
