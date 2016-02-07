@@ -1,0 +1,15 @@
+INSERT INTO `django_migrations` (`id`, `app`, `name`, `applied`) VALUES
+  (1, 'contenttypes', '0001_initial', '2016-02-06 16:02:48'),
+  (2, 'auth', '0001_initial', '2016-02-06 16:02:48'),
+  (3, 'admin', '0001_initial', '2016-02-06 16:02:48'),
+  (4, 'admin', '0002_logentry_remove_auto_add', '2016-02-06 16:02:49'),
+  (5, 'contenttypes', '0002_remove_content_type_name', '2016-02-06 16:02:49'),
+  (6, 'auth', '0002_alter_permission_name_max_length', '2016-02-06 16:02:49'),
+  (7, 'auth', '0003_alter_user_email_max_length', '2016-02-06 16:02:50'),
+  (8, 'auth', '0004_alter_user_username_opts', '2016-02-06 16:02:50'),
+  (9, 'auth', '0005_alter_user_last_login_null', '2016-02-06 16:02:50'),
+  (10, 'auth', '0006_require_contenttypes_0002', '2016-02-06 16:02:50'),
+  (11, 'auth', '0007_alter_validators_add_error_messages', '2016-02-06 16:02:51'),
+  (12, 'hd_hack', '0001_initial', '2016-02-06 16:02:51'),
+  (13, 'sessions', '0001_initial', '2016-02-06 16:02:51'),
+  (14, 'hd_hack', '0002_event_table_user_location', '2016-02-06 18:02:00');
