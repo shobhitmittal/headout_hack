@@ -30,5 +30,5 @@ urlpatterns = [
     url(r'^add_tag/', hd_views.add_tag),
     url(r'^list_tags/', hd_views.list_tag),
     url(r'^event_done/', hd_views.event_completed),
-    
+    url(r'^add_callback_url/', hd_views.add_callback_url),
 ]

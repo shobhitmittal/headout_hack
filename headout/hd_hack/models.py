@@ -17,6 +17,21 @@ class user_table(models.Model):
 	isadmin=models.NullBooleanField(default=False)
 	under_admin=models.CharField(max_length=200)
 
+class callback_url_table(models.Model):
+	#ADD only if user_iden is a admin
+	user_iden=models.ForeignKey(user_table)
+	call_back_url=models.CharField(max_length=255,primary_key=True)
+	callback_type=models.CharField(max_length=255)
+	call_back_url_desc=models.TextField()
+	created_at=models.CharField(max_length=30)
+	updated_at=models.CharField(max_length=30)
+
+#class webhook_type_table(models.Model):
+#	
+#	call_back_url_type=models.CharField(max_length=255,primary_key=True)
+#	created_at=models.CharField(max_length=30)
+#	updated_at=models.CharField(max_length=30)
+
 class gcm_table(models.Model):
 	user_iden=models.ForeignKey(user_table)
 	gcm_id=models.CharField(max_length=100,primary_key=True)

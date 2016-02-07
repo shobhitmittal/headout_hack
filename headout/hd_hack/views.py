@@ -9,8 +9,8 @@ from django.db.models import Count
 from hd_hack import models
 from lib import response_handling
 from lib import encrypting_hashing
-
 from lib import send_gcm_message
+from lib import callback
 
 import sys
 import traceback
@@ -85,15 +85,6 @@ def first_page(request):
 			print (user_save,user_status)
 			data={'auth_token':user_iden}
 			response_data=response_handling.send_response(data,iserror=False,error_code=200)
-			#user_iden=models.CharField(max_length=30,primary_key=True)
-			#user_name=models.CharField(max_length=30)
-			#f_name=models.CharField(max_length=30)
-			#l_name=models.CharField(max_length=30)
-			#email=models.CharField(max_length=30)
-			#phone=models.CharField(max_length=30)
-			#password=models.CharField(max_length=30)
-		#user_table
-		#send_response(data,iserror=False)
 		return HttpResponse(json.dumps(response_data), content_type="application/json")
 	else:
 		response_data=response_handling.send_response(not_found=True,error_code=206)
@@ -171,23 +162,6 @@ def create_event(request):
 				response_data=response_handling.send_response(data,iserror=False,error_code=200)
 			else:
 				response_data=response_handling.send_response(iserror=True,error_code=207)
-			#event_id= models.CharField(max_length=200,primary_key=True)
-			#event_name=models.CharField(max_length=200)
-			#event_desc=models.TextField()
-			#event_location=models.CharField(max_length=200)
-			#created_by= models.ForeignKey(user_table,related_name='creator')
-			#updated_by=models.ForeignKey(user_table,related_name='updator')
-			##event_members=
-			##event_admins=
-			##event_participate=
-			##event_maybe=
-			##event_coming=
-			##event_participated=
-			#event_start_date=models.CharField(max_length=200)
-			#event_end_date=models.CharField(max_length=200)
-			##AUTO
-			#event_created_at=models.CharField(max_length=200)
-			#event_updated_at=models.CharField(max_length=200)
 		else:
 			response_data=response_handling.send_response(not_found=True,error_code=203)
 	else:
@@ -391,17 +365,47 @@ def event_completed(request):
 			event_id_obj=models.event_table.objects.get(event_id=event_id)
 			user_id_obj=models.user_table.objects.get(user_iden=user_iden)
 			event_completed_status=models.event_member.objects.filter(Q(event_id=event_id_obj)&Q(user_iden=user_id_obj)).update(event_completed=True)
+			data={'event_id':event_id,'user_id':user_iden}
 			if event_completed_status==1:
 				print 'Event completed.'
 				event_completed_status=models.event_member.objects.filter(Q(event_id=event_id_obj)&~Q(user_iden=user_id_obj)).update(event_completed=None)
+				url_data=models.callback_url_table.objects.filter(Q(user_iden=user_iden)&Q(callback_type='event_complete')).get(call_back_url)
+				if url_data:
+					status_callback= callback.event_completed(user_iden,url_data,data)
 			elif event_completed_status>1:
 				print 'More than one row affected.'
 				#Enhancement: add verification to check for more than one row affected.
 			else:
 				print 'None of the rows got affected.'
 				#Enhancement: add verification to check for None row affected.
-			data={'event_id':event_id,'user_id':user_iden}
 			response_data=response_handling.send_response(data,iserror=False,error_code=200)
+		else:
+			response_data=response_handling.send_response(not_found=True,error_code=203)
+	else:
+		response_data=response_handling.send_response(not_found=True,error_code=206)
+	return HttpResponse(json.dumps(response_data), content_type="application/json")
+
+@csrf_exempt
+def add_callback_url(request):
+	if request.method=='POST':
+		print request.POST
+		request_rec=ast.literal_eval(request.body)
+		api_key=models.user_table.objects.filter(user_iden=request_rec['auth_token']).filter(isadmin=True).exists()
+		if api_key is True:
+			user_iden=request_rec['user_id']
+			call_back_url=request_rec['call_back_url']
+			callback_type=request_rec['callback_type']
+			call_back_url_desc=request_rec['call_back_url_desc']
+			created_at=int(time.time())
+			updated_at=created_at
+			user_iden_obj=models.user_table.objects.get(user_iden=user_iden)
+			(callback_save,callback_status)=models.callback_url_table.objects.get_or_create(call_back_url=call_back_url,defaults={'user_iden':user_iden_obj,'callback_type':callback_type,'call_back_url_desc':call_back_url_desc,'created_at':created_at,'updated_at':updated_at})
+			print (callback_save,callback_status)
+			if callback_status is True:
+				data={'callback_url_save_status':callback_status}
+				response_data=response_handling.send_response(data,iserror=False,error_code=200)
+			else:
+				response_data=response_handling.send_response(not_found=True,error_code=207)
 		else:
 			response_data=response_handling.send_response(not_found=True,error_code=203)
 	else:
