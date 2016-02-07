@@ -71,14 +71,10 @@ class event_member(models.Model):
 	event_maybe=models.NullBooleanField(default=None)
 	event_nt_gng=models.NullBooleanField(default=None)
 	event_participated=models.NullBooleanField(default=None)
-
-class event_member_pending(models.Model):
-	event_id=models.ForeignKey(event_table)
-	useiden=models.ForeignKey(user_table)
-
-	event_pending=models.NullBooleanField(default=None)
-	event_missed=models.NullBooleanField(default=None)
-	event_status=models.NullBooleanField(default=None)
+	event_completed=models.NullBooleanField(default=False)
+	#event_completed=None,Event not done by user_id for a particular event_id
+	#event_completed=True,Event complted by user_id for a particular event_id
+	#event_completed=False,Event not completed by any user_id for a particular event_id
 
 class location_sharing(models.Model):
 	event_id=models.ForeignKey(event_table)

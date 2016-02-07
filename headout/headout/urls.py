@@ -18,7 +18,7 @@ from django.contrib import admin
 from hd_hack import views as hd_views
 
 urlpatterns = [
-    url(r'^admin/', admin.site.urls),
+    #url(r'^admin/', admin.site.urls),
     url(r'^user_reg/', hd_views.first_page),
     url(r'^user_login/', hd_views.login),
     url(r'^create_event/', hd_views.create_event),
@@ -29,5 +29,6 @@ urlpatterns = [
     url(r'^user_req_location/', hd_views.send_location),
     url(r'^add_tag/', hd_views.add_tag),
     url(r'^list_tags/', hd_views.list_tag),
+    url(r'^event_done/', hd_views.event_completed),
     
 ]

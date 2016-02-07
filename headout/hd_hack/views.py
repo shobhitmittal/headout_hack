@@ -5,11 +5,12 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render_to_response
 from django.template import RequestContext, loader, Context
 from django.db.models import Q
+from django.db.models import Count
 from hd_hack import models
 from lib import response_handling
-from lib import send_gcm_messages
 from lib import encrypting_hashing
 
+from lib import send_gcm_message
 
 import sys
 import traceback
@@ -28,6 +29,7 @@ def first_page(request):
 			#print 25,request.POST['data']
 			print request.body
 			request_rec=ast.literal_eval(request.body)
+			isemail=True
 			##request_rec=json.loads(request.POST['data'])
 			#print type(request_rec)
 			#print 27,ast.literal_eval(request_rec)
@@ -58,6 +60,8 @@ def first_page(request):
 			password=request_rec['password']
 			isadmin=request_rec['isadmin']
 			under_admin=request_rec['under_admin']
+			if under_admin is None:
+				under_admin='None'
 		except Exception as err:
 			print 46,err
 			print traceback.print_exc(file=sys.stdout)
@@ -136,7 +140,7 @@ def create_event(request):
 		print request.POST
 		#print request.body
 		request_rec=ast.literal_eval(request.body)
-		api_key=models.user_table.objects.filter(user_iden=request_rec['auth_token']).exists()
+		api_key=models.user_table.objects.filter(user_iden=request_rec['auth_token']).filter(isadmin=True).exists()
 		if api_key is True:
 			#request_rec=json.loads(request.POST['data'])
 			user_iden=request_rec['auth_token']
@@ -194,9 +198,9 @@ def create_event(request):
 def user_loc_update(request):
 	if request.method=='POST':
 		print request.POST
-		#print request.body
+		print request.body
 		request_rec=ast.literal_eval(request.body)
-		api_key=models.user_table.objects.filter(user_iden=request_rec['auth_token']).exists()
+		api_key=models.user_table.objects.filter(user_iden=request_rec['auth_token']).filter(isadmin=True).exists()
 		if api_key is True:
 			#request_rec=json.loads(request.POST['data'])
 			user_iden=request_rec['user_id']
@@ -223,11 +227,10 @@ def invite_members(request):
 	if request.method=='POST':
 		print request.POST
 		request_rec=ast.literal_eval(request.body)
-		api_key=models.user_table.objects.filter(user_iden=request_rec['auth_token']).exists()
+		api_key=models.user_table.objects.filter(user_iden=request_rec['auth_token']).filter(isadmin=True).exists()
 		if api_key is True:
 			#request_rec=json.loads(request.POST['data'])
 			datas=request_rec['data']
-			admin_id=request_rec['admin_id']
 			data_return={}
 			data_return_nt_fnd=[]
 			phone_list=[]
@@ -235,15 +238,14 @@ def invite_members(request):
 			for data in datas:
 				if data.isdigit() is True:
 					phone_list.append(data)
-					data_email_user_iden=models.user_table.objects.values('user_iden').get(phone=data)
+					data_email_user_iden=models.user_table.objects.values('user_iden').filter(under_admin=request_rec['auth_token']).get(phone=data)
 					if data_email_user_iden[0]['user_iden']:
 						data_return[data]=data_email_user_iden[0]['user_iden']
 					else:
 						data_return_nt_fnd.append(data)
 				else:
 					email_list.append(data)
-					models.user_table.objects.values('user_iden').get(email=data)
-					data_phone_user_iden=models.user_table.objects.values('user_iden').get(email=data)
+					data_phone_user_iden=models.user_table.objects.values('user_iden').filter(under_admin=request_rec['auth_token']).get(email=data)
 					if data_phone_user_iden[0]['user_iden']:
 						data_return[data]=data_phone_user_iden[0]['user_iden']
 					else:
@@ -261,7 +263,7 @@ def gcm_inbound(request):
 	if request.method=='POST':
 		print request.POST
 		request_rec=ast.literal_eval(request.body)
-		api_key=models.user_table.objects.filter(user_iden=request_rec['auth_token']).exists()
+		api_key=models.user_table.objects.filter(user_iden=request_rec['auth_token']).filter(isadmin=True).exists()
 		if api_key is True:
 			#request_rec=json.loads(request.POST['data'])
 			gcm_id=request_rec['gcm_id']
@@ -283,13 +285,20 @@ def gcm_inbound(request):
 
 @csrf_exempt
 def gcm_outbound_message(request):
-	if request.method='POST':
+	if request.method=='POST':
 		print request.POST
 		request_rec=ast.literal_eval(request.body)
-		api_key=models.user_table.objects.filter(user_iden=request_rec['auth_token']).exists()
+		api_key=models.user_table.objects.filter(user_iden=request_rec['auth_token']).filter(isadmin=True).exists()
+		message=request_rec['message']
+		user_id_list=request_rec['user_id_list']
 		if api_key is True:
-			pass
-			lib.se
+			user_id_list=models.gcm_table.objects.values_list('gcm_id').filter(user_iden__in=user_id_list)
+			status_gcm_send=send_gcm_message.send_message_gcm(user_id_list,message)
+			if status_gcm_send is True:
+				data={'user_id_list':user_id_list}
+				response_data=response_handling.send_response(data,iserror=False,error_code=200)
+			else:
+				response_data=response_handling.send_response(not_found=True,error_code=209)
 		else:
 			response_data=response_handling.send_response(not_found=True,error_code=203)
 	else:
@@ -303,7 +312,7 @@ def send_location(request):
 	if request.method=='POST':
 		print request.POST
 		request_rec=ast.literal_eval(request.body)
-		api_key=models.user_table.objects.filter(user_iden=request_rec['auth_token']).exists()
+		api_key=models.user_table.objects.filter(user_iden=request_rec['auth_token']).filter(isadmin=True).exists()
 		if api_key is True:
 			#request_rec=json.loads(request.POST['data'])
 			event_id=request_rec['event_id']
@@ -339,11 +348,12 @@ def add_tag(request):
 	if request.method=='POST':
 		print request.POST
 		request_rec=ast.literal_eval(request.body)
-		api_key=models.user_table.objects.filter(user_iden=request_rec['auth_token']).exists()
+		api_key=models.user_table.objects.filter(user_iden=request_rec['auth_token']).filter(isadmin=True).exists()
 		tag_name=request_rec['tag_name']
 		if api_key is True:
 			created_at=int(time.time())
-			tag_datas=models.tag_table.objects.get_or_create(tag_name=tag_name,defaults={'created_at':created_at})
+			(tag_save,tag_status)=models.tag_table.objects.get_or_create(tag_name=tag_name,defaults={'created_at':created_at})
+			print (tag_save,tag_status)
 		else:
 			response_data=response_handling.send_response(not_found=True,error_code=203)
 	else:
@@ -355,7 +365,7 @@ def list_tag(request):
 	if request.method=='POST':
 		print request.POST
 		request_rec=ast.literal_eval(request.body)
-		api_key=models.user_table.objects.filter(user_iden=request_rec['auth_token']).exists()
+		api_key=models.user_table.objects.filter(user_iden=request_rec['auth_token']).filter(isadmin=True).exists()
 		if api_key is True:
 			data_return=[]
 			tag_datas=models.tag_table.objects.values('tag_name')
@@ -367,4 +377,33 @@ def list_tag(request):
 			response_data=response_handling.send_response(not_found=True,error_code=203)
 	else:
 		response_data=response_handling.send_response(not_found=True,error_code=206)
-	return HttpResponse(json.dumps(response_data), content_type="application/json")	
+	return HttpResponse(json.dumps(response_data), content_type="application/json")
+
+@csrf_exempt
+def event_completed(request):
+	if request.method=='POST':
+		print request.POST
+		request_rec=ast.literal_eval(request.body)
+		api_key=models.user_table.objects.filter(user_iden=request_rec['auth_token']).filter(isadmin=True).exists()
+		if api_key is True:
+			user_iden=request_rec['user_id']
+			event_id=request_rec['event_id']
+			event_id_obj=models.event_table.objects.get(event_id=event_id)
+			user_id_obj=models.user_table.objects.get(user_iden=user_iden)
+			event_completed_status=models.event_member.objects.filter(Q(event_id=event_id_obj)&Q(user_iden=user_id_obj)).update(event_completed=True)
+			if event_completed_status==1:
+				print 'Event completed.'
+				event_completed_status=models.event_member.objects.filter(Q(event_id=event_id_obj)&~Q(user_iden=user_id_obj)).update(event_completed=None)
+			elif event_completed_status>1:
+				print 'More than one row affected.'
+				#Enhancement: add verification to check for more than one row affected.
+			else:
+				print 'None of the rows got affected.'
+				#Enhancement: add verification to check for None row affected.
+			data={'event_id':event_id,'user_id':user_iden}
+			response_data=response_handling.send_response(data,iserror=False,error_code=200)
+		else:
+			response_data=response_handling.send_response(not_found=True,error_code=203)
+	else:
+		response_data=response_handling.send_response(not_found=True,error_code=206)
+	return HttpResponse(json.dumps(response_data), content_type="application/json")

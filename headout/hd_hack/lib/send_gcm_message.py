@@ -1,6 +1,6 @@
 from hd_hack import models
 
-def send_gcm_message(gcm_ids,message):
+def send_message_gcm(gcm_ids,message):
 	status_return={}
 	for gcm_id in gcm_ids:
 		gcm_id=models.gcm_table.objects.get(gcm_id=gcm_id)
