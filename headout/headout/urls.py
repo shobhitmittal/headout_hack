@@ -25,5 +25,9 @@ urlpatterns = [
     url(r'^invite_members/', hd_views.invite_members),
     url(r'^user_loc_update/', hd_views.user_loc_update),
     url(r'^gcm_inbound/', hd_views.gcm_inbound),
+    url(r'^gcm_outbound/', hd_views.gcm_outbound_message),
     url(r'^user_req_location/', hd_views.send_location),
+    url(r'^add_tag/', hd_views.add_tag),
+    url(r'^list_tags/', hd_views.list_tag),
+    
 ]
