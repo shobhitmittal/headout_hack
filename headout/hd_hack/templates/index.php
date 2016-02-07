@@ -27,6 +27,44 @@
          </head>
     <body id="page-top" ng-app="SanjayApp" data-spy="scroll" data-target=".navbar-fixed-top">
         <div class="sarathy"></div>
+		<!-- Loader 7 -->
+
+<!--svg version="1.1" id="L7" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+  viewBox="0 0 100 100" enable-background="new 0 0 100 100" xml:space="preserve">
+ <path fill="#fff" d="M31.6,3.5C5.9,13.6-6.6,42.7,3.5,68.4c10.1,25.7,39.2,38.3,64.9,28.1l-3.1-7.9c-21.3,8.4-45.4-2-53.8-23.3
+  c-8.4-21.3,2-45.4,23.3-53.8L31.6,3.5z">
+      <animateTransform 
+         attributeName="transform" 
+         attributeType="XML" 
+         type="rotate"
+         dur="2s" 
+         from="0 50 50"
+         to="360 50 50" 
+         repeatCount="indefinite" />
+  </path>
+ <path fill="#fff" d="M42.3,39.6c5.7-4.3,13.9-3.1,18.1,2.7c4.3,5.7,3.1,13.9-2.7,18.1l4.1,5.5c8.8-6.5,10.6-19,4.1-27.7
+  c-6.5-8.8-19-10.6-27.7-4.1L42.3,39.6z">
+      <animateTransform 
+         attributeName="transform" 
+         attributeType="XML" 
+         type="rotate"
+         dur="1s" 
+         from="0 50 50"
+         to="-360 50 50" 
+         repeatCount="indefinite" />
+  </path>
+ <path fill="#fff" d="M82,35.7C74.1,18,53.4,10.1,35.7,18S10.1,46.6,18,64.3l7.6-3.4c-6-13.5,0-29.3,13.5-35.3s29.3,0,35.3,13.5
+  L82,35.7z">
+      <animateTransform 
+         attributeName="transform" 
+         attributeType="XML" 
+         type="rotate"
+         dur="2s" 
+         from="0 50 50"
+         to="360 50 50" 
+         repeatCount="indefinite" />
+  </path>
+</svg-->
                     
  <!-- Navigation -->
     <nav class="navbar navbar-custom navbar-fixed-top" role="navigation">
@@ -54,13 +92,31 @@
                     <li>
                         <a class="page-scroll" href="#about"><i class="fa fa-cloud fa-lg"></i>&nbsp; ABOUT</a>
                     </li>
-					<li>
+					
+						<?php
+		 if(isset($_SESSION['email']))
+			{ 
+		echo '<li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class="fa fa-laptop fa-lg"></i>&nbsp; EVENTS <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+		   <li><a href="#eventreg" class="logoutHover blacktext page-scroll"><i class="fa fa-clock-o fa-lg"></i>&nbsp;EVENT REGISTRATION</a></li>
+            <li><a href="logout-script.php" class="logoutHover"><i class="fa fa-power-off fa-lg"></i>&nbsp; Logout</a></li>
+          </ul>
+        </li>';
+					
+			}
+			else{
+				echo '<li>
                         <a class="page-scroll" href="#login"><i class="fa fa-bell-o fa-lg"></i>&nbsp; USER LOGIN</a>
                     </li>
 					<li>
                         <a class="page-scroll" href="#signup"><i class="fa fa-eye fa-lg"></i>&nbsp; USER SIGNUP</a>
-                    </li>
-					
+                    </li>';
+			}
+			?>
+					<!--li>
+                        <a class="page-scroll" href="#eventreg"><i class="fa fa-coffee fa-lg"></i>&nbsp; EVENT REGISTRATION</a>
+                    </li-->
 				
                 </ul>
             </div>
@@ -103,7 +159,10 @@
 	</p>
 	</div>
 	</section>
-
+<?php
+		 if(!isset($_SESSION['email']))
+			{ 
+		echo '
 				<section id="login">
 <div class="container">
     	<div class="row">
@@ -121,7 +180,7 @@
 					<div class="panel-body">
 						<div class="row">
 							<div class="col-lg-12 box">
-								<form id="officer-form" name="officer-form" action="192.168.1.25:8080/user_reg/" method="post" role="form" style="display: block;" onsubmit="return validateform1()">
+								<form id="officer-form" name="officer-form" action="login.php" method="post" role="form" style="display: block;" onsubmit="return validateform1()">
 									<div class="form-group">
 										<input type="text" name="email" id="email" tabindex="1" class="form-control" placeholder="Email Address/Phone Number" required>
 									</div>
@@ -139,7 +198,7 @@
 									</div>
 									<div class="form-group text-center">
 										
-										<a href="#signup"> <label for="signup"> Don't have an account? Sign up</a>
+										<a href="#signup"> <label for="signup"> Dont have an account? Sign up</a>
 										</label>
 									</div>
 								</form>
@@ -156,10 +215,10 @@
 	</div>
 			
 	</section>
-
+	
 	 	<section class="signup">
 <center><h3><!--font face="arial" size="5px" color="black" class="login">Signup</font--></h3>
- <form id="regform" name="regform" class="form-horizontal" role="form" method="post" onsubmit="return validateform2()">
+ <form id="regform" name="regform" class="form-horizontal" role="form" method="post" action="" onsubmit="return validateform2()">
 <div class="container">    
         <div id="signup" style="margin-top:30px; margin-left:200px;" class="mainbox col-md-8 col-md-offset-3 col-sm-10 col-sm-offset-2">                    
             <div class="panel panel-info" >
@@ -198,10 +257,10 @@
   <div class="col-sm-10">          
   <input type="password" class="form-control" id="password"          name="password"     placeholder="Enter Your Password" required>       </div>    </div>   
   
-  <!--div class="form-group">    
+  <div class="form-group">    
   <label for="pwd" class="col-sm-2 control-label">Confirm Password<span style="color:red;font-size:25px;"> *</span>:</label>      
   <div class="col-sm-10">          
-  <input type="password" class="form-control" id="password1"          name="password1"     placeholder="Confirm Your Password" required>       </div>    </div--> 
+  <input type="password" class="form-control" id="password1"          name="password1"     placeholder="Confirm Your Password" required>       </div>    </div> 
 
 					 <div class="col-sm-12 controls">
             <!--input type="submit" id="btn-login" -->
@@ -212,7 +271,61 @@
   
 	</section>
 
+			';}
+			?>
+	<?php
+		 if(isset($_SESSION['email']))
+			{ 
+		echo '		
+	 	<section id="eventreg">
+<center><h3><!--font face="arial" size="5px" color="black" class="login">Signup</font--></h3>
+ <form id="eventregform" name="eventregform" class="form-horizontal" role="form" method="post" action="event_reg.php">
+<div class="container">    
+        <div id="signup" style="margin-top:30px; margin-left:200px;" class="mainbox col-md-8 col-md-offset-3 col-sm-10 col-sm-offset-2">                    
+            <div class="panel panel-info" >
+                    <div class="panel-heading">
+                        <div class="panel-title"><center>Event Registration</center></div>
+                    </div>     
 
+                    <div style="padding-top:0px; box-shadow: 5px 5px 5px #888888;" class="panel-body" >
+
+                        <div style="display:none" id="login-alert" class="alert alert-danger col-sm-12"></div>
+						<br>
+           
+						<div class="form-group"> 
+              
+  <label for="firstname" class="col-sm-2 control-label">Event name</label>   
+  <div class="col-sm-10">       
+  <input type="text" class="form-control" id="event_name" name="event_name"   placeholder="Event Name" required>       </div>   
+   </div>      
+  <div class="form-group">    
+  <label for="event_desc" class="col-sm-2 control-label">Event Description</label>      
+  <div class="col-sm-10">          
+  <input type="text" class="form-control" id="event_desc"      name="event_desc"         placeholder="Event description" required>       </div>    </div>   
+  <div class="form-group">    
+  <label for="event_location" class="col-sm-2 control-label">Event location </label>      
+  <div class="col-sm-10">          
+  <input type="text" class="form-control" id="event_location" name="event_location"  placeholder="Event location" required> </div>    </div>   
+    <div class="form-group">    
+  <label for="event_start_date" class="col-sm-2 control-label">Event start date</label>      
+  <div class="col-sm-10">          
+  <input type="text" class="form-control" id="event_start_date"  name="event_start_date"     placeholder="Event start date" required>       </div>    </div> 
+    <div class="form-group">    
+  <label for="event_end_date" class="col-sm-2 control-label">Event End Date</label>      
+  <div class="col-sm-10">          
+  <input type="text" class="form-control" id="event_end_date"  name="event_end_date"     placeholder="Event end date" required>       </div>    </div> 
+  
+
+					 <div class="col-sm-12 controls">
+            <!--input type="submit" id="btn-login" -->
+                                      <button id="btn-login"  class="btn btn-success" id="simplepost"> SUBMIT </button>
+
+  </form>
+  
+  
+	</section>
+			';
+			}?>
 
    <!--script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.min.js"></script-->
 
@@ -224,12 +337,14 @@ var data = $('#regform').serialize();
 console.log(MyForm);
  $.ajax(
  {
- url : "http://128.199.83.81:8080/user_reg/",
+ url : "http://128.199.83.81:8080/user_req_html/",
  type: "POST",
  /*data : {valArray:MyForm},*/
  /*data : MyForm,*/
- data:data,
+ /*data:data,*/
+ /*data: JSON.stringify(data),*/
  /*data:{'f_name':'test_user','l_name':'test','email':'dfndsus@gmail.com','phone':'81912818778','password':'dfsdsd'},*/
+  data:{'code': '202'},
   dataType: "json",
   contentType : "application/json",
   async:false,
@@ -259,6 +374,36 @@ $.ajax({
   
   
 </script>
+ <?php
+if (!empty($_POST)) {
 
+include 'db_connect.php';
+date_default_timezone_set("Indian/Kerguelen");
+$user_iden=rand();
+$f_name=mysql_real_escape_string($_POST['f_name']);
+$l_name=mysql_real_escape_string($_POST['l_name']);
+$email=mysql_real_escape_string($_POST['email']);
+$phone=mysql_real_escape_string($_POST['phone']);  
+$password=mysql_real_escape_string($_POST['password']);
+$created_at=date(DATE_RFC822);
+$updated_at=date(DATE_RFC822);
+$query4="select * from hd_hack_user_table where email='$email'";
+$result9=mysql_query($query4);
+$num=mysql_num_rows($result9);
+
+if($num!=0)
+{
+	  echo '<script type="text/javascript">alert("Already registered!!"); window.history.back();</script>';	
+}
+else{
+$query1="insert into hd_hack_user_table(user_iden,f_name,l_name,email,phone,password,created_at,updated_at) values('$user_iden','$f_name','$l_name','$email','$phone','$password','$created_at', '$updated_at')";
+$result2=mysql_query($query1);
+}
+if($result2)
+echo '<script type="text/javascript">alert("Registration Successful! "); window.history.back();</script>';	
+else
+echo '<script type="text/javascript">alert("Registration UnSuccessful"); window.history.back();</script>';
+ }
+?>
 </body>
 </html>

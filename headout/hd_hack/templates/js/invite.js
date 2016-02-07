@@ -46,11 +46,11 @@ function validateform2()
 			alert("Password should contain minimum 6 characters-atleast 1 Lowercase, 1 Uppercase, 1 Number");
 			return false;
 			}
-			/*if(x!=x1)
+			if(x!=x1)
 			{
 			alert("Password doesn't match");
 			return false;
-			}*/
+			}
 }			
 $(window).load(function(){$(".sarathy").fadeOut("slow");});
 

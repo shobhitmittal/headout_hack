@@ -490,3 +490,10 @@ color:#000000 !important;
 {
 color:#000000 !important;
 }
+
+svg{
+  width: 100px;
+  height: 100px;
+  margin: 20px;
+  display:inline-block;
+}

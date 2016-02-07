@@ -1,4 +1,4 @@
 <?php
 $con=mysql_connect('localhost','root','');
-mysql_select_db("digitalpanchayat",$con);
+mysql_select_db("invite",$con);
 ?>
