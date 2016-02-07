@@ -14,6 +14,8 @@ class user_table(models.Model):
 	password=models.CharField(max_length=30)
 	created_at=models.CharField(max_length=30)
 	updated_at=models.CharField(max_length=30)
+	isadmin=models.NullBooleanField(default=False)
+	under_admin=models.CharField(max_length=200)
 
 class gcm_table(models.Model):
 	user_iden=models.ForeignKey(user_table)

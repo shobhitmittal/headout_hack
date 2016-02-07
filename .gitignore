@@ -2,4 +2,4 @@
 headout/headout/settings.py
 headout/db.sqlite3
 headout/manage.py
-headout/hd_hack/migrations/
+headout/hd_hack/migrations/*

@@ -89,9 +89,9 @@ def first_page(request):
 def login(request):
 	if request.method=='POST':
 		print request.POST
-		#print request.body
-		#request_rec=ast.literal_eval(request.body)
-		request_rec=json.loads(request.POST['data'])
+		print request.body
+		request_rec=ast.literal_eval(request.body)
+		#request_rec=json.loads(request.POST['data'])
 		#user_name=request_rec['user_id']
 		user_id=request_rec['user_id']
 		password=request_rec['password']
@@ -125,52 +125,56 @@ def create_event(request):
 	if request.method=='POST':
 		print request.POST
 		#print request.body
-		#request_rec=ast.literal_eval(request.body)
-		request_rec=json.loads(request.POST['data'])
-		user_iden=request_rec['auth_token']
-		event_id=request_rec['event_id']
-		event_name=request_rec['event_name']
-		event_desc=request_rec['event_desc']
-		event_location=request_rec['event_location']
-		created_by=request_rec['created_by']
-		updated_by=request_rec['updated_by']
-		event_start_date=request_rec['event_start_date']
-		event_end_date=request_rec['event_end_date']
-		event_created_at=request_rec['event_created_at']
-		event_updated_at=request_rec['event_updated_at']
-		event_id_found=True
-		while event_id_found is True:
-			event_id=response_handling.generate_random(25)
-			event_id_found=models.event_table.objects.filter(event_id=event_id).exists()
-		event_created_at=int(time.time())
-		(event_save,event_status)=models.event_table.objects.get_or_create(event_id=event_id,defaults={'event_name':event_name,'event_desc':event_desc,'event_location':event_location,'created_by':created_by,'updated_by':updated_by,'event_start_date':event_start_date,'event_end_date':event_end_date,'event_created_at':event_created_at,'event_updated_at':event_created_at})
-		print (event_save,event_status)
-		user_iden_obj=models.user_table.objects.get(user_iden=user_iden)
-		event_id_obj=models.event_table.objects.get(event_id=event_id)		
-		admin_status=models.event_member.objects.create(event_id=event_id_obj,user_iden=user_iden_obj,admin=True,event_gng=True,event_maybe=False,event_nt_gng=False,event_participated=False)
-		print admin_status
-		if event_status is True:
-			data={'event_id':event_id}
-			response_data=response_handling.send_response(data,iserror=False,error_code=200)
+		request_rec=ast.literal_eval(request.body)
+		api_key=models.user_table.objects.filter(user_iden=request_rec['auth_token']).exists()
+		if api_key is True:
+			#request_rec=json.loads(request.POST['data'])
+			user_iden=request_rec['auth_token']
+			event_id=request_rec['event_id']
+			event_name=request_rec['event_name']
+			event_desc=request_rec['event_desc']
+			event_location=request_rec['event_location']
+			created_by=request_rec['created_by']
+			updated_by=request_rec['updated_by']
+			event_start_date=request_rec['event_start_date']
+			event_end_date=request_rec['event_end_date']
+			event_created_at=request_rec['event_created_at']
+			event_updated_at=request_rec['event_updated_at']
+			event_id_found=True
+			while event_id_found is True:
+				event_id=response_handling.generate_random(25)
+				event_id_found=models.event_table.objects.filter(event_id=event_id).exists()
+			event_created_at=int(time.time())
+			(event_save,event_status)=models.event_table.objects.get_or_create(event_id=event_id,defaults={'event_name':event_name,'event_desc':event_desc,'event_location':event_location,'created_by':created_by,'updated_by':updated_by,'event_start_date':event_start_date,'event_end_date':event_end_date,'event_created_at':event_created_at,'event_updated_at':event_created_at})
+			print (event_save,event_status)
+			user_iden_obj=models.user_table.objects.get(user_iden=user_iden)
+			event_id_obj=models.event_table.objects.get(event_id=event_id)		
+			admin_status=models.event_member.objects.create(event_id=event_id_obj,user_iden=user_iden_obj,admin=True,event_gng=True,event_maybe=False,event_nt_gng=False,event_participated=False)
+			print admin_status
+			if event_status is True:
+				data={'event_id':event_id}
+				response_data=response_handling.send_response(data,iserror=False,error_code=200)
+			else:
+				response_data=response_handling.send_response(iserror=True,error_code=207)
+			#event_id= models.CharField(max_length=200,primary_key=True)
+			#event_name=models.CharField(max_length=200)
+			#event_desc=models.TextField()
+			#event_location=models.CharField(max_length=200)
+			#created_by= models.ForeignKey(user_table,related_name='creator')
+			#updated_by=models.ForeignKey(user_table,related_name='updator')
+			##event_members=
+			##event_admins=
+			##event_participate=
+			##event_maybe=
+			##event_coming=
+			##event_participated=
+			#event_start_date=models.CharField(max_length=200)
+			#event_end_date=models.CharField(max_length=200)
+			##AUTO
+			#event_created_at=models.CharField(max_length=200)
+			#event_updated_at=models.CharField(max_length=200)
 		else:
-			response_data=response_handling.send_response(iserror=True,error_code=207)
-		#event_id= models.CharField(max_length=200,primary_key=True)
-		#event_name=models.CharField(max_length=200)
-		#event_desc=models.TextField()
-		#event_location=models.CharField(max_length=200)
-		#created_by= models.ForeignKey(user_table,related_name='creator')
-		#updated_by=models.ForeignKey(user_table,related_name='updator')
-		##event_members=
-		##event_admins=
-		##event_participate=
-		##event_maybe=
-		##event_coming=
-		##event_participated=
-		#event_start_date=models.CharField(max_length=200)
-		#event_end_date=models.CharField(max_length=200)
-		##AUTO
-		#event_created_at=models.CharField(max_length=200)
-		#event_updated_at=models.CharField(max_length=200)
+			response_data=response_handling.send_response(not_found=True,error_code=203)
 	else:
 		response_data=response_handling.send_response(not_found=True,error_code=206)
 	return HttpResponse(json.dumps(response_data), content_type="application/json")
@@ -180,8 +184,8 @@ def user_loc_update(request):
 	if request.method=='POST':
 		print request.POST
 		#print request.body
-		#request_rec=ast.literal_eval(request.body)
-		request_rec=json.loads(request.POST['data'])
+		request_rec=ast.literal_eval(request.body)
+		#request_rec=json.loads(request.POST['data'])
 		user_iden=request_rec['user_id']
 		current_location=request_rec['cur_loc']
 		last_updated=int(time.time())
@@ -203,7 +207,8 @@ def user_loc_update(request):
 def invite_members(request):
 	if request.method=='POST':
 		print request.POST
-		request_rec=json.loads(request.POST['data'])
+		request_rec=ast.literal_eval(request.body)
+		#request_rec=json.loads(request.POST['data'])
 		datas=request_rec['data']
 		admin_id=request_rec['admin_id']
 		data_return={}
@@ -231,7 +236,8 @@ def invite_members(request):
 def gcm_inbound(request):
 	if request.method=='POST':
 		print request.POST
-		request_rec=json.loads(request.POST['data'])
+		request_rec=ast.literal_eval(request.body)
+		#request_rec=json.loads(request.POST['data'])
 		gcm_id=request_rec['gcm_id']
 		user_iden=request_rec['user_id']
 		created_at=int(time.time())
@@ -251,7 +257,8 @@ def gcm_inbound(request):
 def send_location(request):
 	if request.method=='POST':
 		print request.POST
-		request_rec=json.loads(request.POST['data'])
+		request_rec=ast.literal_eval(request.body)
+		#request_rec=json.loads(request.POST['data'])
 		event_id=request_rec['event_id']
 		user_iden_req=request_rec['user_id']
 		user_iden_list=request_rec['user_id_share']

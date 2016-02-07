@@ -26,8 +26,4 @@ urlpatterns = [
     url(r'^user_loc_update/', hd_views.user_loc_update),
     url(r'^gcm_inbound/', hd_views.gcm_inbound),
     url(r'^user_req_location/', hd_views.send_location),
-
-    
-    send_location
-
 ]
